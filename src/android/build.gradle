@@ -1,6 +1,6 @@
 repositories {
     maven {
-        url 'http://media.lyra-network.com/mpos/android/sdk/maven-repo/'
+        url 'https://media.lyra-network.com/mpos/android/sdk/maven-repo/'
     }
     maven {
         url 'http://bright.github.io/maven-repo'
@@ -30,5 +30,5 @@ android {
 }
 
 dependencies {
-    compile 'com.lyranetwork.payzen:mpos-sdk:1.0.*'
+    compile 'com.lyranetwork:mpos-sdk:1.0.*'
 }
