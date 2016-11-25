@@ -25,7 +25,7 @@
         </feature>
     </config-file>
 
-    <source-file src="src/android/CordovaPayzen.java" target-dir="src/com/eliberty/plugin/payzen/" />        
+    <source-file src="src/android/CordovaPayzen.java" target-dir="src/com/eliberty/cordova/plugin/payzen/" />        
     <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
 </platform>
 
