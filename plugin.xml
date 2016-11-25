@@ -12,7 +12,7 @@
     <engine name="cordova" version=">=6.3.0"/>
   </engines>
 
-  <asset src="cordova-payzen.js" target="www/cordova-payzen.js"/>
+  <asset src="www/cordova-payzen.js" target="js/cordova-payzen.js"/>
 
   <js-module src="www/cordova-payzen.js" name="CordovaPayzen">
     <clobbers target="CordovaPayzen" />
