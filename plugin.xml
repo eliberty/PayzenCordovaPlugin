@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin xmlns="http://cordova.apache.org/ns/plugins/1.0" 
-    id="com.eliberty.plugin.payzen"
+    id="com.eliberty.cordova.plugin.payzen"
     version="1.0.0">  
 
   <name>CordovaPayzen</name>
@@ -12,16 +12,16 @@
     <engine name="cordova" version=">=6.3.0"/>
   </engines>
 
-  <asset src="cordova-payzen.js" target="js/hello.js"/>
+  <asset src="cordova-payzen.js" target="www/cordova-payzen.js"/>
 
-  <js-module src="cordova-payzen.js" name="CordovaPayzen">
+  <js-module src="www/cordova-payzen.js" name="CordovaPayzen">
     <clobbers target="CordovaPayzen" />
   </js-module>
 
   <platform name="android">
     <config-file target="res/xml/config.xml" parent="/*">
         <feature name="CordovaPayzen">
-            <param name="android-package" value="com.eliberty.plugin.payzen.CordovaPayzen"/>
+            <param name="android-package" value="com.eliberty.cordova.plugin.payzen.CordovaPayzen"/>
         </feature>
     </config-file>
 
