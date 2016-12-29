@@ -16,10 +16,10 @@ const getPayzenToken = () => {
 
 const notifyFunction = (error, paymentInError = false) => {  
   if (paymentInError === true) {
-    setTimeout(() => { // @Todo update payment in error }, 2000);
+    setTimeout(() => { /* @Todo update payment in error */ }, 2000);
     console.info('**** ELiberty **** PaymentKO');
   } else {
-    setTimeout(() => { // @Todo Payment is aborted, we can try a new payment }, 2000);
+    setTimeout(() => { /* @Todo Payment is aborted, we can try a new payment */ }, 2000);
   }
 };
 
