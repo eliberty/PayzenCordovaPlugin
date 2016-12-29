@@ -9,6 +9,7 @@ cordova plugin add https://github.com/lmeliberty/payzenSdk
 HOW TO USE IN ES6 :
 ------------
 
+```javascript
 const getPayzenToken = () => {
 	// @Todo Implement create a token identification
 };
@@ -51,3 +52,4 @@ const params = {
 };
 
 window.plugins.CordovaPayzen.startActivity(params, successFunction, notifyFunction);
+```
