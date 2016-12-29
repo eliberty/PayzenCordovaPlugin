@@ -40,7 +40,9 @@ public class CordovaPayzen extends CordovaPlugin
     private String email;
     private Long amount;
     private String orderId;
-    private static final String PAYMENT_MODE = "TEST";
+    private Boolean testMode;
+    private static final String PAYMENT_MODE_PRODUCTION = "PRODUCTION";
+    private static final String PAYMENT_MODE_TEST = "TEST";
 
     /**
      * Method witch permit to initialize the Cordova Payzen Plugin
@@ -95,6 +97,7 @@ public class CordovaPayzen extends CordovaPlugin
                         email = obj.has("email") ? obj.getString("email") : null;
                         amount = Long.parseLong(obj.has("amount") ? obj.getString("amount") : "0");
                         orderId = obj.has("orderId") ? obj.getString("orderId") : null;
+                        testMode = obj.has("testMode") && Boolean.parseBoolean(obj.getString("testMode"));
 
                         startActivity(0);
                     }
@@ -194,7 +197,8 @@ public class CordovaPayzen extends CordovaPlugin
     {
         try {
             LOG.i("eliberty.cordova.plugin.payzen", "executeTransaction");
-            MposResult mposResult = MposSDK.executeTransaction(activity, mTransaction, false, PAYMENT_MODE);
+            String mode = testMode ?  PAYMENT_MODE_TEST : PAYMENT_MODE_PRODUCTION;
+            MposResult mposResult = MposSDK.executeTransaction(activity, mTransaction, false, mode);
 
             mposResult.setCallback(new MposResult.ResultCallback() {
                 @Override
