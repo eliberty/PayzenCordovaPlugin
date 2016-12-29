@@ -1,13 +1,16 @@
-# Payzen SDK #
-By Ludovic Menu @Eliberty Services SAS
+# Plugin Cordova for MPOS Payzen #
+==================================
 
-INSTALL
--------
+Ludovic Menu @Eliberty Services SAS
+
+INSTALL :
+---------
 
 cordova plugin add https://github.com/lmeliberty/payzenSdk
 
+
 HOW TO USE IN ES6 :
-------------
+-------------------
 
 ```javascript
 const getPayzenToken = () => {
@@ -16,8 +19,7 @@ const getPayzenToken = () => {
 
 const notifyFunction = (error, paymentInError = false) => {  
   if (paymentInError === true) {
-    setTimeout(() => { /* @Todo update payment in error */ }, 2000);
-    console.info('**** ELiberty **** PaymentKO');
+    setTimeout(() => { /* @Todo update payment in error */ }, 2000);    
   } else {
     setTimeout(() => { /* @Todo Payment is aborted, we can try a new payment */ }, 2000);
   }
