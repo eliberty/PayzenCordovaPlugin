@@ -6,7 +6,7 @@ Ludovic Menu @Eliberty Services SAS
 INSTALL :
 ---------
 
-cordova plugin add https://github.com/lmeliberty/payzenSdk
+cordova plugin add https://github.com/eliberty/PayzenCordovaPlugin
 
 
 HOW TO USE IN ES6 :
@@ -17,28 +17,13 @@ const getPayzenToken = () => {
 	// @Todo Implement create a token identification
 };
 
-const notifyFunction = (error, paymentInError = false) => {  
-  if (paymentInError === true) {
-    setTimeout(() => { /* @Todo update payment in error */ }, 2000);    
-  } else {
-    setTimeout(() => { /* @Todo Payment is aborted, we can try a new payment */ }, 2000);
-  }
-};
+const notifyFunction = (error, paymentInError = false) => {
+  // display message error.code
 
-const successFunction = (data) => { 
-  switch (data.status) {
-    case 'ABORTED':
-      notifyFunction({ code: 'CORDOVA_PAYZEN_ABORTED' }, false);
-      break;
-    case 'APPROVED':
-      // @Todo Payment is approved, we can update payment and execute the next instructions
-      break;
-    case 'DECLINED':
-      notifyFunction({ code: 'CORDOVA_PAYZEN_DECLINED' }, true);
-      break;
-    default:
-      notifyFunction(data, true);
-      break;
+  if (paymentInError === true) {
+    /* @Todo update payment in error */
+  } else {
+    /* @Todo Payment is aborted, suggest a new payment */
   }
 };
 
@@ -53,5 +38,28 @@ const params = {
   testMode: XXXXXXXXXX // Enable test mode or not,
 };
 
-window.plugins.CordovaPayzen.startActivity(params, successFunction, notifyFunction);
+const failedCallbackFunction = (data) => {
+  console.info(`**** ELiberty **** Payzen failedCallbackFunction : ${JSON.stringify(data)}`);
+  notifyFunction(data, false);
+};
+
+const successCallbackFunction = (data) => {
+  console.info(`**** ELiberty **** Payzen successCallbackFunction : ${JSON.stringify(data)}`);
+  switch (data.status) {
+    case 'ABORTED':      
+      notifyFunction({ code: 'CORDOVA_PAYZEN_ABORTED' }, false);
+      break;
+    case 'APPROVED':      
+       // @Todo Payment is approved, we can update payment and execute the next instructions
+      break;
+    case 'DECLINED':      
+      notifyFunction({ code: 'CORDOVA_PAYZEN_DECLINED' }, true);
+      break;
+    default:
+      notifyFunction(null, true);
+      break;
+  }
+};
+
+window.plugins.CordovaPayzen.startActivity(params, successCallbackFunction, failedCallbackFunction);
 ```

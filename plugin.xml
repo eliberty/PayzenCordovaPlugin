@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin xmlns="http://cordova.apache.org/ns/plugins/1.0" 
     id="com.eliberty.cordova.plugin.payzen"
-    version="1.0.0">  
+    version="1.1.0">  
 
   <name>CordovaPayzen</name>
   <description>Payzen SDK for Cordova</description>

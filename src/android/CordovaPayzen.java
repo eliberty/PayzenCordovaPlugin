@@ -2,7 +2,11 @@ package com.eliberty.cordova.plugin.payzen;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Bundle;
 
 import com.lyranetwork.mpos.sdk.MCurrency;
 import com.lyranetwork.mpos.sdk.MCustomer;
@@ -19,6 +23,9 @@ import org.apache.cordova.LOG;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.getsentry.raven.Raven;
+import com.getsentry.raven.RavenFactory;
 
 /**
  * CordovaPayzen is a PhoneGap/Cordova plugin that bridges Android intents and MposSDK
@@ -43,6 +50,7 @@ public class CordovaPayzen extends CordovaPlugin
     private Boolean testMode;
     private static final String PAYMENT_MODE_PRODUCTION = "PRODUCTION";
     private static final String PAYMENT_MODE_TEST = "TEST";
+    private static Raven raven;
 
     /**
      * Method witch permit to initialize the Cordova Payzen Plugin
@@ -52,12 +60,25 @@ public class CordovaPayzen extends CordovaPlugin
     {
         activity = this.cordova.getActivity();
         Application application = activity.getApplication();
+        Context context = activity.getApplicationContext();
+
         try {
+            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(activity.getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = ai.metaData;
+            String dsn = bundle.getString("com.eliberty.touchv2.sentry.android.DSN");
+            LOG.w("eliberty.cordova.plugin.payzen", "**** Eliberty dsn : **** " + dsn + " package name " + activity.getPackageName());
+
+            raven = RavenFactory.ravenInstance(dsn);
             LOG.i("eliberty.cordova.plugin.payzen", "pluginInitialize");
             MposSDK.init(application);
             MposSDK.setThemeColor(Color.parseColor("#F98253"));
         }
         catch (MposException e) {
+            raven.sendException(e);
+            LOG.w("eliberty.cordova.plugin.payzen", "TOUCH_INIT_MPOS_IN_ERROR");
+            runCallbackError(TOUCH_INIT_MPOS_IN_ERROR, TOUCH_INIT_MPOS_IN_ERROR);
+        }
+        catch (PackageManager.NameNotFoundException nnfe) {
             LOG.w("eliberty.cordova.plugin.payzen", "TOUCH_INIT_MPOS_IN_ERROR");
             runCallbackError(TOUCH_INIT_MPOS_IN_ERROR, TOUCH_INIT_MPOS_IN_ERROR);
         }
@@ -102,6 +123,7 @@ public class CordovaPayzen extends CordovaPlugin
                         startActivity(0);
                     }
                     catch (JSONException ex) {
+                        raven.sendException(ex);
                         LOG.w("eliberty.cordova.plugin.payzen", "JSONException: " + ex.getMessage());
                     }
                 }
@@ -153,9 +175,11 @@ public class CordovaPayzen extends CordovaPlugin
             }
         }
         catch (MposException e) {
+            raven.sendException(e);
             runCallbackError(e.getTypeException(), e.getMessage());
         }
         catch(InterruptedException ex) {
+            raven.sendException(ex);
             runCallbackError(Integer.toString(ex.hashCode()), ex.getMessage());
         }
     }
@@ -216,6 +240,7 @@ public class CordovaPayzen extends CordovaPlugin
             });
         }
         catch (MposException e) {
+            raven.sendException(e);
             LOG.w("eliberty.cordova.plugin.payzen", "MposException : " + e.getMessage());
             runCallbackError(e.getTypeException(), e.getMessage());
         }
@@ -231,12 +256,14 @@ public class CordovaPayzen extends CordovaPlugin
             LOG.i("eliberty.cordova.plugin.payzen", "call success callback runCallbackSuccess");
             JSONObject obj = new JSONObject();
             obj.put("transactionId", result.getTransaction().getTransactionId());
+            obj.put("transactionUuId", result.getTransaction().getTransactionUuid());
             obj.put("status", result.getTransaction().getTransactionStatusLabel().toString());
             obj.put("receipt", result.getTransaction().getReceipt());
             obj.put("transactionDate", result.getTransaction().getSubmissionDate());
             callbackContext.success(obj);
         }
         catch (JSONException jse) {
+            raven.sendException(jse);
             LOG.w("eliberty.cordova.plugin.payzen", "JSONException : " + jse.getMessage());
             runCallbackError(Integer.toString(jse.hashCode()), jse.getMessage());
         }
@@ -258,6 +285,7 @@ public class CordovaPayzen extends CordovaPlugin
             callbackContext.error(obj);
         }
         catch (JSONException jse) {
+            raven.sendException(jse);
             LOG.w("eliberty.cordova.plugin.payzen", "JSONException : " + jse.getMessage());
             runCallbackError(Integer.toString(jse.hashCode()), jse.getMessage());
         }
@@ -274,6 +302,7 @@ public class CordovaPayzen extends CordovaPlugin
             MposSDK.shutdown();
         }
         catch (MposException e) {
+            raven.sendException(e);
             LOG.w("eliberty.cordova.plugin.payzen", "MposException : " + e.getMessage());
             runCallbackError(e.getTypeException(), e.getMessage());
         }
