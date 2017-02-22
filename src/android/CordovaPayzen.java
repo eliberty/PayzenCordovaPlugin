@@ -27,8 +27,6 @@ import org.json.JSONObject;
 import com.getsentry.raven.Raven;
 import com.getsentry.raven.RavenFactory;
 
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
-
 /**
  * CordovaPayzen is a PhoneGap/Cordova plugin that bridges Android intents and MposSDK
  *
