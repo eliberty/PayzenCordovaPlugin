@@ -38,13 +38,11 @@ const params = {
   testMode: XXXXXXXXXX // Enable test mode or not,
 };
 
-const failedCallbackFunction = (data) => {
-  console.info(`**** ELiberty **** Payzen failedCallbackFunction : ${JSON.stringify(data)}`);
+const failedCallbackFunction = (data) => {  
   notifyFunction(data, false);
 };
 
-const successCallbackFunction = (data) => {
-  console.info(`**** ELiberty **** Payzen successCallbackFunction : ${JSON.stringify(data)}`);
+const successCallbackFunction = (data) => {  
   switch (data.status) {
     case 'ABORTED':      
       notifyFunction({ code: 'CORDOVA_PAYZEN_ABORTED' }, false);
