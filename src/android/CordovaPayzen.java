@@ -28,8 +28,7 @@ import com.getsentry.raven.RavenFactory;
  */
 public class CordovaPayzen extends CordovaPlugin
 {
-    // @todo Configure SENTRY DSN
-    private static final String SENTRY_DSN = "XXXXX";
+    private static final String SENTRY_DSN = "XXXXXX";
     private Activity activity;
     private static final String START_ACTIVITY = "startActivity";
     private static final String TOUCH_INIT_MPOS_IN_ERROR = "TOUCH_INIT_MPOS_IN_ERROR";
