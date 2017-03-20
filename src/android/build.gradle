@@ -30,6 +30,6 @@ android {
 }
 
 dependencies {
-    compile 'com.lyranetwork:mpos-sdk:1.1.0'
+    compile 'com.lyranetwork:mpos-sdk:1.1.1'
     compile 'com.getsentry.raven:raven-android:7.8.2'
 }

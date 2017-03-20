@@ -72,6 +72,11 @@ public class CordovaPayzen extends CordovaPlugin
                 LOG.w("eliberty.cordova.plugin.payzen", "MposSDK.init() fail", e);
                 runCallbackError(TOUCH_INIT_MPOS_IN_ERROR, e.getMessage());
             }
+            catch (Exception e) {
+                raven.sendException(e);
+                LOG.w("eliberty.cordova.plugin.payzen", "MposSDK.init() fail", e);
+                runCallbackError(TOUCH_INIT_MPOS_IN_ERROR, e.getMessage());
+            }
             MposSDK.setThemeColor(Color.parseColor("#F98253"));
         }
     }
@@ -190,6 +195,10 @@ public class CordovaPayzen extends CordovaPlugin
             LOG.w("eliberty.cordova.plugin.payzen", "Error on starting mPOS SDK: InterruptedException", ex);
             raven.sendException(ex);
             runCallbackError(Integer.toString(ex.hashCode()), ex.getMessage());
+        } catch (Exception ex) {
+            LOG.w("eliberty.cordova.plugin.payzen", "Error on starting mPOS SDK: Exception", ex);
+            raven.sendException(ex);
+            runCallbackError(Integer.toString(ex.hashCode()), ex.getMessage());
         }
     }
 
@@ -201,7 +210,7 @@ public class CordovaPayzen extends CordovaPlugin
         LOG.i("eliberty.cordova.plugin.payzen", "launchSuccessStartActivity");
         MCurrency currency = MposSDK.getDefaultCurrencies();
 
-        if(currency!=null) {
+        if (currency!=null) {
             MCustomer mposCustomer = new MCustomer();
             mposCustomer.setEmail(email);
 
@@ -220,7 +229,7 @@ public class CordovaPayzen extends CordovaPlugin
                 LOG.w("eliberty.cordova.plugin.payzen", "SDK is not ready !");
                 runCallbackError(TOUCH_SDK_NOT_READY, TOUCH_SDK_NOT_READY);
             }
-        }else{
+        } else {
             LOG.w("eliberty.cordova.plugin.payzen", "MposSDK.getDefaultCurrencies() is null");
             raven.sendMessage("MposSDK.getDefaultCurrencies() is null");
             runCallbackError(TOUCH_SDK_NOT_READY, "MposSDK.getDefaultCurrencies() is null");
@@ -240,7 +249,7 @@ public class CordovaPayzen extends CordovaPlugin
             String mode = testMode ?  PAYMENT_MODE_TEST : PAYMENT_MODE_PRODUCTION;
 
             MposResult mposResult = MposSDK.executeTransaction(activity, mTransaction, false, mode);
-            if(mposResult!=null) {
+            if (mposResult!=null) {
                 mposResult.setCallback(new MposResult.ResultCallback() {
                     @Override
                     public void onSuccess(Result result) {
@@ -257,7 +266,7 @@ public class CordovaPayzen extends CordovaPlugin
                         runCallbackError(Integer.toString(e.hashCode()), e.getMessage());
                     }
                 });
-            }else{
+            } else {
                 raven.sendMessage("MposSDK.executeTransaction() return null");
                 LOG.w("eliberty.cordova.plugin.payzen", "MposSDK.executeTransaction() return null");
                 runCallbackError(TOUCH_TRANSACTION_MPOS_IN_ERROR, "MposSDK.executeTransaction() return null");
@@ -267,6 +276,11 @@ public class CordovaPayzen extends CordovaPlugin
             raven.sendException(e);
             LOG.w("eliberty.cordova.plugin.payzen", "MposException : " + e.getMessage(), e);
             runCallbackError(e.getTypeException(), e.getMessage());
+        }
+        catch (Exception ex) {
+            LOG.w("eliberty.cordova.plugin.payzen", "Exception", ex);
+            raven.sendException(ex);
+            runCallbackError(Integer.toString(ex.hashCode()), ex.getMessage());
         }
     }
 
@@ -291,6 +305,11 @@ public class CordovaPayzen extends CordovaPlugin
             LOG.w("eliberty.cordova.plugin.payzen", "JSONException : " + jse.getMessage());
             runCallbackError(Integer.toString(jse.hashCode()), jse.getMessage());
         }
+        catch (Exception ex) {
+            LOG.w("eliberty.cordova.plugin.payzen", "Exception", ex);
+            raven.sendException(ex);
+            runCallbackError(Integer.toString(ex.hashCode()), ex.getMessage());
+        }
     }
 
     /**
@@ -307,11 +326,15 @@ public class CordovaPayzen extends CordovaPlugin
             obj.put("code", code);
             obj.put("message", message);
             callbackContext.error(obj);
+            callbackContext.notify();
         }
         catch (JSONException jse) {
             raven.sendException(jse);
             LOG.w("eliberty.cordova.plugin.payzen", "JSONException : " + jse.getMessage());
-            runCallbackError(Integer.toString(jse.hashCode()), jse.getMessage());
+        }
+        catch (Exception ex) {
+            LOG.w("eliberty.cordova.plugin.payzen", "Exception", ex);
+            raven.sendException(ex);
         }
     }
 }
