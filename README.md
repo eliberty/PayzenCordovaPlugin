@@ -17,6 +17,7 @@ const getPayzenToken = () => {
 	// @Todo Implement create a token identification
 };
 
+
 const notifyFunction = (error, paymentInError = false) => {
   // display message error.code
 
@@ -38,7 +39,8 @@ const params = {
   testMode: XXXXXXXXXX // Enable test mode or not,
 };
 
-const failedCallbackFunction = (data) => {  
+const failedCallbackFunction = (data) => {
+  //Log failedCallbackfunction and launch notifyFunction
   notifyFunction(data, false);
 };
 
@@ -59,5 +61,9 @@ const successCallbackFunction = (data) => {
   }
 };
 
-window.plugins.CordovaPayzen.startActivity(params, successCallbackFunction, failedCallbackFunction);
+window.plugins.CordovaPayzen.startActivity(
+  params,
+  successCallbackFunction,
+  failedCallbackFunction,
+);
 ```
