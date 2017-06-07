@@ -28,8 +28,7 @@ import com.getsentry.raven.RavenFactory;
  */
 public class CordovaPayzen extends CordovaPlugin
 {
-    private static final String SENTRY_DSN = "XXXXXX";
-    private Activity activity;
+    private static final String SENTRY_DSN = "XXXXX";
     private static final String START_ACTIVITY = "startActivity";
     private static final String TOUCH_INIT_MPOS_IN_ERROR = "TOUCH_INIT_MPOS_IN_ERROR";
     private static final String TOUCH_CARD_READER_NOT_AVAILABLE = "TOUCH_CARD_READER_NOT_AVAILABLE";
@@ -53,7 +52,7 @@ public class CordovaPayzen extends CordovaPlugin
     @Override
     protected void pluginInitialize()
     {
-        activity = this.cordova.getActivity();
+        Activity activity = this.cordova.getActivity();
         Application application = activity.getApplication();
 
         // Init Sentry
@@ -65,6 +64,8 @@ public class CordovaPayzen extends CordovaPlugin
         if(!MposSDK.isSdkInitialized()) {
             try {
                 MposSDK.init(application);
+                MposSDK.setThemeColor(Color.parseColor("#F98253"));
+                MposSDK.updateNlpa(100);
             }
             catch (MposException e) {
                 raven.sendException(e);
@@ -77,7 +78,6 @@ public class CordovaPayzen extends CordovaPlugin
                 LOG.w("eliberty.cordova.plugin.payzen", "MposSDK.init() fail", e);
                 runCallbackError(TOUCH_INIT_MPOS_IN_ERROR, e.getMessage());
             }
-            MposSDK.setThemeColor(Color.parseColor("#F98253"));
         }
     }
 
@@ -110,7 +110,8 @@ public class CordovaPayzen extends CordovaPlugin
         final JSONArray finalArgs = args;
 
         if (action.equals(START_ACTIVITY)) {
-            cordova.getThreadPool().execute(new Runnable() {
+//            cordova.getThreadPool().execute(new Runnable() {
+            cordova.getActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     try {
                         JSONObject obj = finalArgs.getJSONObject(0);
@@ -155,7 +156,7 @@ public class CordovaPayzen extends CordovaPlugin
             if (MposSDK.isCardReaderAvailable()) {
                 LOG.i("eliberty.cordova.plugin.payzen", "isCardReaderAvailable");
                 // @todo: ne pas relancer peut etre le start à chaque paiement ?
-                MposResult mposResult = MposSDK.start(activity, this.acceptorId);
+                MposResult mposResult = MposSDK.start(this.cordova.getActivity(), this.acceptorId);
                 if (mposResult != null) {
                     LOG.i("eliberty.cordova.plugin.payzen", "start SDK");
                     mposResult.setCallback(new MposResult.ResultCallback() {
@@ -210,7 +211,7 @@ public class CordovaPayzen extends CordovaPlugin
         LOG.i("eliberty.cordova.plugin.payzen", "launchSuccessStartActivity");
         MCurrency currency = MposSDK.getDefaultCurrencies();
 
-        if (currency!=null) {
+        if(currency!=null) {
             MCustomer mposCustomer = new MCustomer();
             mposCustomer.setEmail(email);
 
@@ -229,7 +230,7 @@ public class CordovaPayzen extends CordovaPlugin
                 LOG.w("eliberty.cordova.plugin.payzen", "SDK is not ready !");
                 runCallbackError(TOUCH_SDK_NOT_READY, TOUCH_SDK_NOT_READY);
             }
-        } else {
+        }else{
             LOG.w("eliberty.cordova.plugin.payzen", "MposSDK.getDefaultCurrencies() is null");
             raven.sendMessage("MposSDK.getDefaultCurrencies() is null");
             runCallbackError(TOUCH_SDK_NOT_READY, "MposSDK.getDefaultCurrencies() is null");
@@ -248,25 +249,28 @@ public class CordovaPayzen extends CordovaPlugin
 
             String mode = testMode ?  PAYMENT_MODE_TEST : PAYMENT_MODE_PRODUCTION;
 
-            MposResult mposResult = MposSDK.executeTransaction(activity, mTransaction, false, mode);
-            if (mposResult!=null) {
+            MposResult mposResult = MposSDK.executeTransaction(this.cordova.getActivity(), mTransaction, false, mode);
+            if(mposResult!=null) {
                 mposResult.setCallback(new MposResult.ResultCallback() {
                     @Override
                     public void onSuccess(Result result) {
+                        LOG.w("eliberty.cordova.plugin.payzen", "MposResult.ResultCallback success");
                         runCallbackSuccess(result);
                     }
 
                     @Override
                     public void onError(Result error) {
+                        LOG.w("eliberty.cordova.plugin.payzen", "MposResult.ResultCallback on error");
                         runCallbackError(error.getCode(), error.getMessage());
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        LOG.w("eliberty.cordova.plugin.payzen", "MposResult.ResultCallback on error Throwable");
                         runCallbackError(Integer.toString(e.hashCode()), e.getMessage());
                     }
                 });
-            } else {
+            }else{
                 raven.sendMessage("MposSDK.executeTransaction() return null");
                 LOG.w("eliberty.cordova.plugin.payzen", "MposSDK.executeTransaction() return null");
                 runCallbackError(TOUCH_TRANSACTION_MPOS_IN_ERROR, "MposSDK.executeTransaction() return null");
